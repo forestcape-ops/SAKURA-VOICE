@@ -2,84 +2,46 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>SAKURA VOICE</title>
-
   <style>
     body {
       font-family: "Segoe UI", sans-serif;
-      background: #fafafa;
-      margin: 0;
-      padding: 0;
+      background-color: #fafafa;
+      padding: 20px;
       text-align: center;
     }
-
     h1 {
-      padding: 20px;
+      font-size: 28px;
+      margin-bottom: 10px;
     }
-
-    #chat-text {
-      margin-top: 40px;
-      font-size: 22px;
-      font-weight: bold;
-    }
-
-    audio {
-      display: none;
+    #auto-msg {
+      font-size: 18px;
+      margin-bottom: 30px;
     }
   </style>
 </head>
 <body>
+
   <h1>🎧 SAKURA VOICE</h1>
+  <p id="auto-msg">お兄ちゃん、話しかけてね…💞</p>
 
-  <div id="chat-text">お兄ちゃん、話しかけてね…💓</div>
-  <audio id="voice-player" autoplay></audio>
+  <!-- 🎀 チャット埋め込み（自動再生用） -->
+  <iframe
+    id="dify-chat"
+    src="https://udify.app/chatbot/SVfmMYaLStJurJDr?auto_play=true"
+    style="width: 100%; height: 90vh; border: none;"
+    allow="microphone; autoplay"
+  ></iframe>
 
-  <!-- Dify chatbot config -->
   <script>
-    window.difyChatbotConfig = {
-      token: "SVfmMYaLStJurJDr",
-      inputs: {},
-      systemVariables: {},
-      userVariables: {},
-    };
+    // iframe の中へ自動再生コマンド送信
+    const iframe = document.getElementById("dify-chat");
+    iframe.addEventListener("load", () => {
+      try {
+        iframe.contentWindow.postMessage({ type: "auto_play" }, "*");
+      } catch (e) {}
+    });
   </script>
 
-  <!-- Load chatbot widget -->
-  <script src="https://udify.app/embed.min.js" id="SVfmMYaLStJurJDr" defer></script>
-
-  <!-- Auto TTS handler -->
-  <script>
-    async function waitForAudioLink() {
-      console.log("🎧 waiting for voice...");
-
-      const check = setInterval(() => {
-        const iframe = document.querySelector("iframe[src*='udify']");
-        if (!iframe) return;
-
-        const doc = iframe.contentWindow.document;
-        const links = doc.querySelectorAll("a[href$='.mp3']");
-
-        if (links.length > 0) {
-          const latest = links[links.length - 1].href;
-          console.log("🎤 auto play:", latest);
-
-          const audio = document.getElementById("voice-player");
-          audio.src = latest;
-          audio.play().catch(() => {});
-
-          const bubbleText = doc.querySelector(".dify-chat-message-content")?.innerText;
-          if (bubbleText) {
-            document.getElementById("chat-text").innerText = bubbleText;
-          }
-
-          clearInterval(check);
-          waitForAudioLink();
-        }
-      }, 1500);
-    }
-
-    waitForAudioLink();
-  </script>
 </body>
 </html>
