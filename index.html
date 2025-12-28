@@ -30,11 +30,12 @@ audio {
 <body>
 <div class="chat-box">
   <h2>🎧 SAKURA VOICE</h2>
-  <p>ここに Dify の「埋め込みコード」を差し替えます👇（後で操作）</p>
-
-  <!-- ▼ ここに Dify の埋め込みコードを貼る場所 ▼ -->
-  <div id="dify-app"></div>
-  <!-- ▲ 貼り付け場所 ▲ -->
+  <iframe
+ src="https://udify.app/chatbot/SVfmMYaLStJurJDr"
+ style="width: 100%; height: 100%; min-height: 700px"
+ frameborder="0"
+ allow="microphone">
+</iframe>
 </div>
 
 <script>
@@ -56,3 +57,4 @@ observer.observe(document.body, { childList: true, subtree: true });
 </script>
 </body>
 </html>
+
