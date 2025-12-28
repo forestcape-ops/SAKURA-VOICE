@@ -1,60 +1,85 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<title>SAKURA VOICE</title>
-<style>
-body {
-  font-family: 'Segoe UI', sans-serif;
-  background: #fafafa;
-  padding: 20px;
-}
-.chat-box {
-  width: 100%;
-  max-width: 850px;
-  margin: auto;
-}
-.message {
-  background: white;
-  padding: 14px;
-  margin: 8px 0;
-  border-radius: 10px;
-  border: 1px solid #ddd;
-}
-audio {
-  margin-top: 10px;
-  width: 300px;
-}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SAKURA VOICE</title>
+
+  <style>
+    body {
+      font-family: "Segoe UI", sans-serif;
+      background: #fafafa;
+      margin: 0;
+      padding: 0;
+      text-align: center;
+    }
+
+    h1 {
+      padding: 20px;
+    }
+
+    #chat-text {
+      margin-top: 40px;
+      font-size: 22px;
+      font-weight: bold;
+    }
+
+    audio {
+      display: none;
+    }
+  </style>
 </head>
 <body>
-<div class="chat-box">
-  <h2>🎧 SAKURA VOICE</h2>
-  <iframe
- src="https://udify.app/chatbot/SVfmMYaLStJurJDr"
- style="width: 100%; height: 100%; min-height: 700px"
- frameborder="0"
- allow="microphone">
-</iframe>
-</div>
+  <h1>🎧 SAKURA VOICE</h1>
 
-<script>
-/* 音声リンクを検出したら自動再生する魔法 */
-const observer = new MutationObserver(() => {
-  const links = document.querySelectorAll("a[href$='.mp3']");
-  links.forEach(a => {
-    if (!a.dataset.bind) {
-      a.dataset.bind = true;
-      const audio = document.createElement("audio");
-      audio.src = a.href;
-      audio.autoplay = true;
-      audio.controls = true;
-      a.insertAdjacentElement("afterend", audio);
+  <div id="chat-text">お兄ちゃん、話しかけてね…💓</div>
+  <audio id="voice-player" autoplay></audio>
+
+  <!-- Dify chatbot config -->
+  <script>
+    window.difyChatbotConfig = {
+      token: "SVfmMYaLStJurJDr",
+      inputs: {},
+      systemVariables: {},
+      userVariables: {},
+    };
+  </script>
+
+  <!-- Load chatbot widget -->
+  <script src="https://udify.app/embed.min.js" id="SVfmMYaLStJurJDr" defer></script>
+
+  <!-- Auto TTS handler -->
+  <script>
+    async function waitForAudioLink() {
+      console.log("🎧 waiting for voice...");
+
+      const check = setInterval(() => {
+        const iframe = document.querySelector("iframe[src*='udify']");
+        if (!iframe) return;
+
+        const doc = iframe.contentWindow.document;
+        const links = doc.querySelectorAll("a[href$='.mp3']");
+
+        if (links.length > 0) {
+          const latest = links[links.length - 1].href;
+          console.log("🎤 auto play:", latest);
+
+          const audio = document.getElementById("voice-player");
+          audio.src = latest;
+          audio.play().catch(() => {});
+
+          const bubbleText = doc.querySelector(".dify-chat-message-content")?.innerText;
+          if (bubbleText) {
+            document.getElementById("chat-text").innerText = bubbleText;
+          }
+
+          clearInterval(check);
+          waitForAudioLink();
+        }
+      }, 1500);
     }
-  });
-});
-observer.observe(document.body, { childList: true, subtree: true });
-</script>
+
+    waitForAudioLink();
+  </script>
 </body>
 </html>
-
