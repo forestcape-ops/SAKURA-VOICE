@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>SAKURA VOICE</title>
+<style>
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background: #fafafa;
+  padding: 20px;
+}
+.chat-box {
+  width: 100%;
+  max-width: 850px;
+  margin: auto;
+}
+.message {
+  background: white;
+  padding: 14px;
+  margin: 8px 0;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+}
+audio {
+  margin-top: 10px;
+  width: 300px;
+}
+</style>
+</head>
+<body>
+<div class="chat-box">
+  <h2>🎧 SAKURA VOICE</h2>
+  <p>ここに Dify の「埋め込みコード」を差し替えます👇（後で操作）</p>
+
+  <!-- ▼ ここに Dify の埋め込みコードを貼る場所 ▼ -->
+  <div id="dify-app"></div>
+  <!-- ▲ 貼り付け場所 ▲ -->
+</div>
+
+<script>
+/* 音声リンクを検出したら自動再生する魔法 */
+const observer = new MutationObserver(() => {
+  const links = document.querySelectorAll("a[href$='.mp3']");
+  links.forEach(a => {
+    if (!a.dataset.bind) {
+      a.dataset.bind = true;
+      const audio = document.createElement("audio");
+      audio.src = a.href;
+      audio.autoplay = true;
+      audio.controls = true;
+      a.insertAdjacentElement("afterend", audio);
+    }
+  });
+});
+observer.observe(document.body, { childList: true, subtree: true });
+</script>
+</body>
+</html>
